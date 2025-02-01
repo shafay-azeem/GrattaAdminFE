@@ -183,7 +183,7 @@ const LandingPage = () => {
               </li>
             </ul>
             <a
-              href="/sign-up-page"
+              href="/SignUpPage"
               className="block w-full bg-gradient-to-r from-[#FC36FF] to-[#7F31FB] text-[#FFFFFF] px-6 py-3 rounded-full hover:opacity-90 transition-opacity text-center"
             >
               Get Started
