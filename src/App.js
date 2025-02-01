@@ -8,6 +8,8 @@ import GrattaAdmin from "./GrattaAdmin.js";
 import ResetPassword from "./ResetPassword.js";
 import MainApp from "./MainApp.js";
 import { Route, Routes } from "react-router-dom";
+import 'font-awesome/css/font-awesome.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
 function App() {
