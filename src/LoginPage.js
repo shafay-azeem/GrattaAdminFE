@@ -40,6 +40,9 @@ const LoginPage = () => {
         successToast.show();
         navigate("/MainApp");
         localStorage.setItem("token", loginResponse.data.token);
+        if (loginResponse.data.user) {
+          localStorage.setItem("role", loginResponse.data.user.role);
+        }
         // Store company name in local storage
         if (loginResponse.data.user && loginResponse.data.user.company) {
           localStorage.setItem(

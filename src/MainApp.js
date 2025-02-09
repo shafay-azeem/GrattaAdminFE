@@ -13,7 +13,7 @@ function MainApp() {
   const [pointsToGive, setPointsToGive] = useState(500);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentView, setCurrentView] = useState("give");
-  const [isAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("member");
   const [inviteFirstName, setInviteFirstName] = useState("");
@@ -123,6 +123,14 @@ function MainApp() {
     "💡",
   ];
   const [companyName, setCompanyName] = useState("");
+
+  useEffect(() => {
+    // Retrieve role from localStorage
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setIsAdmin(storedRole);
+    }
+  }, []);
 
   useEffect(() => {
     // Retrieve company name from localStorage
@@ -500,7 +508,7 @@ function MainApp() {
           </div>
         </div>
         <div className="p-4 border-t border-[#7AFBF7]/20">
-          {isAdmin && (
+          {isAdmin === "admin" && (
             <div className="">
               <button
                 onClick={() => setCurrentView("users")}
@@ -512,16 +520,7 @@ function MainApp() {
               >
                 <i className="fas fa-users mr-3"></i> Users
               </button>
-              <button
-                onClick={() => setCurrentView("update profile")}
-                className={`w-full p-3 rounded-lg text-left ${
-                  currentView === "update profile"
-                    ? "bg-[#7F31FB] text-white"
-                    : "text-white hover:bg-[#7F31FB]/50"
-                }`}
-              >
-                <i className="fas fa-user-edit mr-3"></i> Update Profile
-              </button>
+
               <button
                 onClick={() => setCurrentView("settings")}
                 className={`w-full p-3 rounded-lg text-left ${
@@ -532,18 +531,30 @@ function MainApp() {
               >
                 <i className="fas fa-cog mr-3"></i> Settings
               </button>
-              <button
-                onClick={handleLogout}
-                className={`w-full p-3 rounded-lg text-left ${
-                  currentView === "logout"
-                    ? "bg-[#7F31FB] text-white"
-                    : "text-white hover:bg-[#7F31FB]/50"
-                }`}
-              >
-                <i className="fas fa-sign-out-alt mr-3"></i> Logout
-              </button>
             </div>
           )}
+
+          <button
+            onClick={() => setCurrentView("update profile")}
+            className={`w-full p-3 rounded-lg text-left ${
+              currentView === "update profile"
+                ? "bg-[#7F31FB] text-white"
+                : "text-white hover:bg-[#7F31FB]/50"
+            }`}
+          >
+            <i className="fas fa-user-edit mr-3"></i> Update Profile
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className={`w-full p-3 rounded-lg text-left ${
+              currentView === "logout"
+                ? "bg-[#7F31FB] text-white"
+                : "text-white hover:bg-[#7F31FB]/50"
+            }`}
+          >
+            <i className="fas fa-sign-out-alt mr-3"></i> Logout
+          </button>
         </div>
       </div>
 
