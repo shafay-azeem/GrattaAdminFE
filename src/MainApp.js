@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiFunctions from "./global/GlobalFunction";
+import { API_URL, BASE_URL } from "./global/Constant";
+import Toast from "./Hooks/Toast";
+import axios from "axios";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -21,7 +25,10 @@ function MainApp() {
   const [showUserSuggestions, setShowUserSuggestions] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [pointsInput, setPointsInput] = useState("");
+
   const [teamMembers, setTeamMembers] = useState([
     {
       id: 1,
@@ -125,6 +132,44 @@ function MainApp() {
     }
   }, []);
 
+  useEffect(() => {
+    const request = axios.CancelToken.source();
+
+    getUserDetail(request);
+    return () => request.cancel(); // (*)
+  }, []);
+
+  const getUserDetail = async (request) => {
+    try {
+      const userDetailResponse = await apiFunctions.GET_REQUEST(
+        BASE_URL + API_URL.USER_DETAIL,
+        request
+      );
+
+      if (userDetailResponse.status === 200) {
+        // console.log(userDetailResponse?.data?.user, "userDetailResponse");
+        const res = userDetailResponse?.data?.user;
+        setFirstName(res.firstName);
+        setLastName(res.lastName);
+      } else {
+        if (axios.isCancel(userDetailResponse)) {
+          // Handle the cancellation here
+          console.log("api is cancelled");
+        } else {
+          const successToast = new Toast(
+            userDetailResponse.response.data.message,
+            "error",
+            userDetailResponse.response.status
+          );
+          successToast.show();
+        }
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+    }
+  };
+
   const handleLogout = () => {
     // Clear all stored data in localStorage
     localStorage.clear();
@@ -132,6 +177,7 @@ function MainApp() {
     // Navigate to the login page
     navigate("/loginpage");
   };
+
   const handleMessageChange = (e) => {
     const newMessage = e.target.value;
     setMessage(newMessage);
@@ -169,6 +215,7 @@ function MainApp() {
       setShowUserSuggestions(false);
     }
   };
+
   const handleUserSelect = (user) => {
     const lastAtSymbol = message.lastIndexOf("@");
     const beforeAt = message.slice(0, lastAtSymbol);
@@ -184,10 +231,12 @@ function MainApp() {
     setSelectedUser(user);
     setShowUserSuggestions(false);
   };
+
   const handleEmojiClick = (emoji) => {
     setMessage(message + emoji);
     setShowEmojiPicker(false);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedUser || !pointsInput) return;
@@ -210,14 +259,17 @@ function MainApp() {
     setSelectedUser(null);
     setPointsInput("");
   };
+
   const handleEditMessage = (activity) => {
     setEditingActivity(activity);
     setEditMessage(activity.message);
   };
+
   const handleCancelEdit = () => {
     setEditingActivity(null);
     setEditMessage("");
   };
+
   const handleSaveEdit = (activityId) => {
     setCompanyActivity(
       companyActivity.map((activity) =>
@@ -229,10 +281,12 @@ function MainApp() {
     setEditingActivity(null);
     setEditMessage("");
   };
+
   const handleUndoPoints = (activity) => {
     setCompanyActivity(companyActivity.filter((a) => a.id !== activity.id));
     setPointsToGive((prev) => prev + activity.points);
   };
+
   const handleInviteSubmit = (e) => {
     e.preventDefault();
     const newMember = {
@@ -250,9 +304,11 @@ function MainApp() {
     setInviteFirstName("");
     setInviteLastName("");
   };
+
   const handleDeleteMember = (id) => {
     setTeamMembers(teamMembers.filter((member) => member.id !== id));
   };
+
   const handleCsvUpload = async () => {
     if (!csvFile) return;
 
@@ -284,6 +340,7 @@ function MainApp() {
     //   setTeamMembers([...teamMembers, ...newMembers]);
     //   setCsvFile(null);
   };
+
   const handleDownloadTemplate = () => {
     const csvContent =
       "email,firstName,lastName,role\njohn.doe@example.com,John,Doe,member\njane.smith@example.com,Jane,Smith,admin";
@@ -297,6 +354,7 @@ function MainApp() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   };
+
   const [rewards] = useState([
     {
       id: 1,
@@ -329,6 +387,7 @@ function MainApp() {
       description: "Take an extra day off",
     },
   ]);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -336,6 +395,45 @@ function MainApp() {
       day: "2-digit",
       year: "numeric",
     });
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+
+    let updateBody = {
+      firstName: firstName,
+      lastName: lastName,
+    };
+
+    try {
+      let updateProfileResponse = await apiFunctions.PUT_REQUEST(
+        BASE_URL + API_URL.UPDATE_PROFILE,
+        updateBody
+      );
+      if (
+        updateProfileResponse.status === 201 ||
+        updateProfileResponse.status === 200
+      ) {
+        const successToast = new Toast(
+          updateProfileResponse.data.message,
+          "success",
+          updateProfileResponse.status
+        );
+        successToast.show();
+      } else {
+        const successToast = new Toast(
+          updateProfileResponse.response.data.message,
+          "error",
+          updateProfileResponse.response.status
+        );
+        successToast.show();
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+    } finally {
+      // Set loading to false to re-enable button after the request is done
+    }
   };
 
   return (
@@ -413,6 +511,16 @@ function MainApp() {
                 }`}
               >
                 <i className="fas fa-users mr-3"></i> Users
+              </button>
+              <button
+                onClick={() => setCurrentView("update profile")}
+                className={`w-full p-3 rounded-lg text-left ${
+                  currentView === "update profile"
+                    ? "bg-[#7F31FB] text-white"
+                    : "text-white hover:bg-[#7F31FB]/50"
+                }`}
+              >
+                <i className="fas fa-user-edit mr-3"></i> Update Profile
               </button>
               <button
                 onClick={() => setCurrentView("settings")}
@@ -778,6 +886,49 @@ function MainApp() {
                       </div>
                     ))}
                 </div>
+              </div>
+            )}
+
+            {currentView === "update profile" && (
+              <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold">Update Profile</h2>
+                </div>
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div className="relative">
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled=""
+                    className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    Update
+                  </button>
+                </form>
               </div>
             )}
 
