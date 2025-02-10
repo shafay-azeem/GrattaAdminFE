@@ -4,16 +4,16 @@ import axios from "axios";
 const apiFunctions = {
   GET_REQUEST: async function (url, request) {
     const token = localStorage.getItem("token");
-    //const token = TOKEN;
+    // const token = TOKEN;
     let config = null;
     if (token !== null && token !== undefined) {
-     let config = {
+      config = {
         cancelToken: request?.token,
         headers: {
           "Content-type": "application/json",
           "Cache-Control": "no-cache",
           // "Content-type": "application/x-www-form-urlencoded",
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
     }

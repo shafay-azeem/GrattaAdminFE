@@ -6,6 +6,10 @@ export const API_URL = {
 
   SIGNIN: "api/user/V1/login",
 
+  UPDATE_PROFILE: "api/user/V1/updateProfile",
+
+  USER_DETAIL: "api/user/V1/userDetail",
+
   FOTGOT_PASSWORD: "api/user/V1/forgotPassword",
 
   RESET_PASSWORD: "api/user/V1/resetPassword/",
