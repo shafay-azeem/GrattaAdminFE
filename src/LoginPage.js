@@ -49,6 +49,10 @@ const LoginPage = () => {
             "companyName",
             loginResponse.data.user.company.name
           );
+          localStorage.setItem(
+            "companyId",
+            loginResponse.data.user.company._id
+          );
         }
       } else {
         const successToast = new Toast(

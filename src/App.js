@@ -20,6 +20,8 @@ function App() {
       <Route path="/SignUpPage" element={<SignUpPage />} />
       <Route path="/GrattaAdmin" element={<GrattaAdmin />} />
       <Route path="/ResetPassword/:id" element={<ResetPassword />} />
+      <Route path="/setPassword/:id" element={<ResetPassword />} />
+
       <Route path="/MainApp" element={<MainApp />} />
     </Routes>
   );
