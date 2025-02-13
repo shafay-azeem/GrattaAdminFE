@@ -17,4 +17,6 @@ export const API_URL = {
   FOTGOT_PASSWORD: "api/user/V1/forgotPassword",
 
   RESET_PASSWORD: "api/user/V1/resetPassword/",
+
+  ACCEPT_INVITATION: "api/user/V1/acceptInvitation/",
 };
