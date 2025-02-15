@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import apiFunctions from "../global/GlobalFunction";
 import { API_URL, BASE_URL } from "../global/Constant";
 import Toast from "../Hooks/Toast";
@@ -6,7 +6,9 @@ import axios from "axios";
 
 const InviteMembers = () => {
   const storeCompanyId = localStorage.getItem("companyId");
-
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState("");
+  const [fileName, setFileName] = useState();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +19,8 @@ const InviteMembers = () => {
   const [loading, setLoading] = useState(false);
   const [refreshData, setRefreshData] = useState(false); // State to trigger API call
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [downloadData, setDownloadData] = useState([]);
 
   useEffect(() => {
     const request = axios.CancelToken.source();
@@ -119,38 +123,6 @@ const InviteMembers = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const handleCsvUpload = async () => {
-    if (!csvFile) return;
-
-    //   const { url } = await upload({ file: csvFile });
-    //   const response = await fetch(url);
-    //   const text = await response.text();
-
-    //   const rows = text.split("\n").slice(1);
-    //   const newMembers = rows
-    //     .map((row, index) => {
-    //       const [email, firstName, lastName, role] = row
-    //         .split(",")
-    //         .map((field) => field.trim());
-    //       return {
-    //         id: teamMembers.length + index + 1,
-    //         email,
-    //         firstName,
-    //         lastName,
-    //         role: role.toLowerCase(),
-    //         status: "invite-sent",
-    //         dateInvited: new Date().toISOString().split("T")[0],
-    //       };
-    //     })
-    //     .filter(
-    //       (member) =>
-    //         member.email && member.role && member.firstName && member.lastName,
-    //     );
-
-    //   setTeamMembers([...teamMembers, ...newMembers]);
-    //   setCsvFile(null);
-  };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -162,6 +134,70 @@ const InviteMembers = () => {
 
   const handleDeleteMember = (id) => {
     setTeamMembers(teamMembers.filter((member) => member.id !== id));
+  };
+
+  const handleFileChange = async () => {
+    const file = fileInputRef.current.files[0];
+
+    if (file) {
+      console.log("Selected file:", file);
+      setFileName();
+      setFile(file);
+    }
+  };
+
+  const uploadCsvFile = async () => {
+    if (isButtonDisabled) return;
+    if (!file) {
+      const errorToast = new Toast("Please upload a file first", "error", 400);
+      errorToast.show();
+      return;
+    }
+    const file1 = fileInputRef.current.files[0];
+    if (file1) {
+      const formData = new FormData();
+
+      formData.append("inviteFile", file1);
+
+      try {
+        setIsButtonDisabled(true);
+        let response = await apiFunctions.POST_REQUEST(
+          BASE_URL + API_URL.BULK_INVITE,
+          formData,
+          true
+        );
+
+        if (response.status === 201 || response.status === 200) {
+          // setDownloadData(response?.data?.users || []);
+          setFileName(response?.data?.fileName);
+          fileInputRef.current.value = "";
+          setFile("");
+          const successToast = new Toast(
+            response.data.message,
+            "success",
+            response.status
+          );
+          successToast.show();
+          // Trigger API refresh
+          setRefreshData((prev) => !prev);
+        } else {
+          setFile("");
+          const successToast = new Toast(
+            response.response.data.message,
+            "error",
+            response.response.status
+          );
+          successToast.show();
+        }
+      } catch (error) {
+        const successToast = new Toast("Internal Server Error", "error", 500);
+        successToast.show();
+      } finally {
+        setIsButtonDisabled(false); // Enable button again after response is received
+      }
+    } else {
+      console.log("No file selected.");
+    }
   };
 
   return (
@@ -271,20 +307,22 @@ const InviteMembers = () => {
               <div className="flex items-center space-x-4">
                 <input
                   type="file"
-                  accept=".csv"
-                  onChange={(e) => setCsvFile(e.target.files?.[0])}
+                  name="file"
+                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                 />
                 <button
-                  onClick={handleCsvUpload}
-                  disabled={!csvFile}
+                  onClick={uploadCsvFile}
+                  disabled={isButtonDisabled}
                   className={`px-4 py-2 rounded-lg ${
-                    !csvFile
+                    isButtonDisabled
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                       : "bg-indigo-600 text-white hover:bg-indigo-700"
                   }`}
                 >
-                  {false ? "Uploading..." : "Upload CSV"}
+                  {isButtonDisabled ? "Uploading..." : "Upload CSV"}
                 </button>
               </div>
             </div>
