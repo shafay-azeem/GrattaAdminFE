@@ -11,6 +11,8 @@ export const API_URL = {
 
   INVITE_USER: "api/user/V1/inviteUser",
 
+  BULK_INVITE: "api/user/V1/bulkInvite",
+
   GET_USERS_BY_COMPANY_ID: "api/user/V1/getUsersByCompany/",
 
   USER_DETAIL: "api/user/V1/userDetail",
