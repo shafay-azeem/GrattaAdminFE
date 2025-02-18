@@ -5,6 +5,8 @@ import { API_URL, BASE_URL } from "./global/Constant";
 import Toast from "./Hooks/Toast";
 import axios from "axios";
 import InviteMembers from "./components/InviteMembers";
+import { loadStripe } from "@stripe/stripe-js";
+import PaymentPage from "./components/PaymentPage";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -124,6 +126,8 @@ function MainApp() {
     "💡",
   ];
   const [companyName, setCompanyName] = useState("");
+
+  const [point, setPoint] = useState();
 
   useEffect(() => {
     // Retrieve role from localStorage
@@ -876,50 +880,54 @@ function MainApp() {
             )}
 
             {currentView === "settings" && (
-              <div className="bg-white p-6 rounded-xl shadow-sm">
-                <h2 className="text-2xl font-semibold mb-6">
-                  Company Settings
-                </h2>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">
-                      Company Information
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Company Name
-                        </label>
-                        <input
-                          type="text"
-                          name="companyName"
-                          value={companyName} // Set value from state
-                          disabled // Make input field read-only
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="Enter company name"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Points Allocation
-                        </label>
-                        <input
-                          type="number"
-                          name="pointsAllocation"
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="Monthly points per user"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
-                      >
-                        Save Changes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              // <div className="bg-white p-6 rounded-xl shadow-sm">
+              //   <h2 className="text-2xl font-semibold mb-6">
+              //     Company Settings
+              //   </h2>
+              //   <div className="space-y-6">
+              //     <div>
+              //       <h3 className="text-lg font-semibold mb-4">
+              //         Company Information
+              //       </h3>
+              //       <div className="space-y-4">
+              //         <div>
+              //           <label className="block text-sm font-medium text-gray-700 mb-1">
+              //             Company Name
+              //           </label>
+              //           <input
+              //             type="text"
+              //             name="companyName"
+              //             value={companyName} // Set value from state
+              //             disabled // Make input field read-only
+              //             className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              //             placeholder="Enter company name"
+              //           />
+              //         </div>
+              //         <div>
+              //           <label className="block text-sm font-medium text-gray-700 mb-1">
+              //             Points Allocation
+              //           </label>
+              //           <input
+              //             type="number"
+              //             name="pointsAllocation"
+              //             value={points}
+              //             onChange={(e) => setPoint(e.target.value)}
+              //             className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              //             placeholder="Monthly points per user"
+              //           />
+              //         </div>
+              //         <button
+              //           type="button"
+              //           className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+              //         >
+              //           Save Changes
+              //         </button>
+              //       </div>
+              //     </div>
+              //   </div>
+              // </div>
+
+              <PaymentPage companyName={companyName} points={points} />
             )}
 
             {currentView === "users" && <InviteMembers />}
