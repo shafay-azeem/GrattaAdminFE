@@ -125,7 +125,6 @@ function MainApp() {
     "🎯",
     "💡",
   ];
-  const [companyName, setCompanyName] = useState("");
 
   const [point, setPoint] = useState();
 
@@ -134,14 +133,6 @@ function MainApp() {
     const storedRole = localStorage.getItem("role");
     if (storedRole) {
       setIsAdmin(storedRole);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Retrieve company name from localStorage
-    const storedCompanyName = localStorage.getItem("companyName");
-    if (storedCompanyName) {
-      setCompanyName(storedCompanyName);
     }
   }, []);
 
@@ -927,7 +918,7 @@ function MainApp() {
               //   </div>
               // </div>
 
-              <PaymentPage companyName={companyName} points={points} />
+              <PaymentPage />
             )}
 
             {currentView === "users" && <InviteMembers />}
