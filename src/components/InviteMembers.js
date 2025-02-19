@@ -132,8 +132,32 @@ const InviteMembers = () => {
     });
   };
 
-  const handleDeleteMember = (id) => {
-    setTeamMembers(teamMembers.filter((member) => member.id !== id));
+  const handleDeleteMember = async (id) => {
+    try {
+      const deleteUserResponse = await apiFunctions.DELETE_REQUEST(
+        BASE_URL + API_URL.DELETE_USER_BY_ID + id
+      );
+      if (deleteUserResponse.status === 200) {
+        const successToast = new Toast(
+          deleteUserResponse.data.message,
+          "success",
+          deleteUserResponse.status
+        );
+        successToast.show();
+        setRefreshData((prev) => !prev);
+      } else {
+        const successToast = new Toast(
+          deleteUserResponse.response.data.message,
+          "error",
+          deleteUserResponse.response.status
+        );
+        successToast.show();
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+      // console.log(error);
+    }
   };
 
   const handleFileChange = async () => {
@@ -383,7 +407,7 @@ const InviteMembers = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <button
-                        onClick={() => handleDeleteMember(member.id)}
+                        onClick={() => handleDeleteMember(member._id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         <i className="fas fa-trash"></i>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -12,12 +12,34 @@ const stripePromise = loadStripe(
   "pk_test_51Qt39J05uvznrjSmkPQwJAOwcdCwVfzQbXJHbzdLq816kNkxQpqrXPaNFLkmxEnKeJf4KW8snvX0JhrKUH5gbafJ003zudp8it"
 );
 
-const PaymentForm = ({ companyId, companyName, points }) => {
+const PaymentForm = () => {
+  const storeCompanyId = localStorage.getItem("companyId");
   const stripe = useStripe();
   const elements = useElements();
-  const [amount, setAmount] = useState(""); // Store the amount
+  const [amount, setAmount] = useState(0); // Store the amount
   const [loading, setLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [points, setPoints] = useState("");
+
+  useEffect(() => {
+    // Retrieve company name from localStorage
+    const storedCompanyName = localStorage.getItem("companyName");
+    if (storedCompanyName) {
+      setCompanyName(storedCompanyName);
+    }
+  }, []);
+
+  const handlePointsChange = (e) => {
+    const enteredPoints = e.target.value;
+    setPoints(enteredPoints);
+
+    // Calculate amount (points * 0.10)
+    const calculatedAmount = enteredPoints
+      ? (parseFloat(enteredPoints) * 0.1).toFixed(2)
+      : 0;
+    setAmount(calculatedAmount);
+  };
 
   // Function to handle payment intent creation
   const handleCreatePaymentIntent = async () => {
@@ -34,7 +56,7 @@ const PaymentForm = ({ companyId, companyName, points }) => {
           },
           body: JSON.stringify({
             amount,
-            companyId: "67a8b78c7fbce4d8d072f977",
+            companyId: storeCompanyId,
             points,
           }),
         }
@@ -72,6 +94,10 @@ const PaymentForm = ({ companyId, companyName, points }) => {
       alert("Payment Failed: " + error.message);
     } else if (paymentIntent.status === "succeeded") {
       alert("Payment Successful!");
+      setPoints("");
+      setAmount(0);
+      setClientSecret(null);
+      elements.getElement(CardElement).clear(); // Clears the card input
     }
 
     setLoading(false);
@@ -79,18 +105,43 @@ const PaymentForm = ({ companyId, companyName, points }) => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-semibold mb-6">Company Payment</h2>
+      <h3 className="text-lg font-semibold mb-4">Company Information</h3>
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount (USD)
+            Company Name
+          </label>
+          <input
+            type="text"
+            name="companyName"
+            value={companyName} // Set value from state
+            className="w-full p-2 border rounded-lg"
+            disabled
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Points Allocation
+          </label>
+          <input
+            type="number"
+            name="pointsAllocation"
+            value={points}
+            onChange={handlePointsChange}
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter points"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Amount
           </label>
           <input
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            disabled
             className="w-full p-2 border rounded-lg"
-            placeholder="Enter amount"
+            placeholder="Calculated amount"
           />
         </div>
         <div>
