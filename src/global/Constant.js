@@ -1,4 +1,3 @@
-
 //export const BASE_URL = "http://localhost:7000/";
 export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
 
@@ -24,4 +23,7 @@ export const API_URL = {
   ACCEPT_INVITATION: "api/user/V1/acceptInvitation/",
 
   DELETE_USER_BY_ID: "api/user/V1/deleteUserById/",
+
+  GET_ACTIVE_USER_COUNT_BY_COMPANY_ID:
+    "api/user/V1/getActiveUserCountByCompanyId",
 };
