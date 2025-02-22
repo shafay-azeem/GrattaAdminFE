@@ -6,6 +6,10 @@ import {
   useElements,
   CardElement,
 } from "@stripe/react-stripe-js";
+import axios from "axios";
+import Toast from "../Hooks/Toast";
+import apiFunctions from "../global/GlobalFunction";
+import { API_URL, BASE_URL } from "../global/Constant";
 
 // Load Stripe
 const stripePromise = loadStripe(
@@ -21,6 +25,7 @@ const PaymentForm = () => {
   const [clientSecret, setClientSecret] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [points, setPoints] = useState("");
+  const [activeUserCount, setActiveUserCount] = useState();
 
   useEffect(() => {
     // Retrieve company name from localStorage
@@ -30,14 +35,61 @@ const PaymentForm = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const request = axios.CancelToken.source();
+
+    getActiveUserCount(request);
+    return () => request.cancel(); // (*)
+  }, []);
+
+  const getActiveUserCount = async (request) => {
+    try {
+      const getActiveUserCountResponse = await apiFunctions.GET_REQUEST(
+        BASE_URL + API_URL.GET_ACTIVE_USER_COUNT_BY_COMPANY_ID,
+        request
+      );
+
+      if (getActiveUserCountResponse.status === 200) {
+        console.log(
+          getActiveUserCountResponse?.data,
+          "getActiveUserCountResponse"
+        );
+        setActiveUserCount(getActiveUserCountResponse?.data?.activeUserCount);
+      } else {
+        if (axios.isCancel(getActiveUserCountResponse)) {
+          // Handle the cancellation here
+          console.log("api is cancelled");
+        } else {
+          const successToast = new Toast(
+            getActiveUserCountResponse.response.data.message,
+            "error",
+            getActiveUserCountResponse.response.status
+          );
+          successToast.show();
+        }
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+    }
+  };
+
   const handlePointsChange = (e) => {
     const enteredPoints = e.target.value;
     setPoints(enteredPoints);
 
-    // Calculate amount (points * 0.10)
-    const calculatedAmount = enteredPoints
-      ? (parseFloat(enteredPoints) * 0.1).toFixed(2)
-      : 0;
+    // // Calculate amount (points * 0.10)
+    // const calculatedAmount = enteredPoints
+    //   ? (parseFloat(enteredPoints) * 0.1 * activeUserCount).toFixed(2)
+    //   : 0;
+    // setAmount(calculatedAmount);
+
+    // Calculate amount (points * 0.10 * activeUserCount)
+    const parsedPoints = parseFloat(enteredPoints);
+    const calculatedAmount =
+      !isNaN(parsedPoints) && activeUserCount
+        ? (parsedPoints * 0.1 * activeUserCount).toFixed(2)
+        : 0;
     setAmount(calculatedAmount);
   };
 
