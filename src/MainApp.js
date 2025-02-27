@@ -5,8 +5,8 @@ import { API_URL, BASE_URL } from "./global/Constant";
 import Toast from "./Hooks/Toast";
 import axios from "axios";
 import InviteMembers from "./components/InviteMembers";
-import { loadStripe } from "@stripe/stripe-js";
-import PaymentPage from "./components/PaymentPage";
+import PointsDistForm from "./components/PointsDistForm.js";
+import CompActivityCard from "./components/CompActivityCard.js";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -17,12 +17,8 @@ function MainApp() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentView, setCurrentView] = useState("give");
   const [isAdmin, setIsAdmin] = useState("");
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("member");
-  const [inviteFirstName, setInviteFirstName] = useState("");
-  const [inviteLastName, setInviteLastName] = useState("");
 
-  // const [upload, { loading: uploading }] = useUpload();
+  const [loading, setLoading] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
   const [editMessage, setEditMessage] = useState("");
   const [showUserSuggestions, setShowUserSuggestions] = useState(false);
@@ -77,6 +73,22 @@ function MainApp() {
       date: "2025-01-14",
     },
   ]);
+
+  const emojis = [
+    "👍",
+    "🎉",
+    "🌟",
+    "🙌",
+    "💪",
+    "👏",
+    "🚀",
+    "💯",
+    "🏆",
+    "⭐️",
+    "🎯",
+    "💡",
+  ];
+
   const [companyActivity, setCompanyActivity] = useState([
     {
       id: 1,
@@ -111,22 +123,6 @@ function MainApp() {
       date: "2025-01-12",
     },
   ]);
-  const emojis = [
-    "👍",
-    "🎉",
-    "🌟",
-    "🙌",
-    "💪",
-    "👏",
-    "🚀",
-    "💯",
-    "🏆",
-    "⭐️",
-    "🎯",
-    "💡",
-  ];
-
-  const [point, setPoint] = useState();
 
   useEffect(() => {
     // Retrieve role from localStorage
@@ -142,6 +138,45 @@ function MainApp() {
     getUserDetail(request);
     return () => request.cancel(); // (*)
   }, []);
+
+  useEffect(() => {
+    const request = axios.CancelToken.source();
+
+    getUsersCompanyPoints(request);
+    return () => request.cancel(); // (*)
+  }, [currentView]);
+
+  const getUsersCompanyPoints = async (request) => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      const getUsersCompanyPointsResponse = await apiFunctions.GET_REQUEST(
+        BASE_URL + API_URL.GET_USER_COMPANY_POINTS,
+        request
+      );
+      if (getUsersCompanyPointsResponse.status === 200) {
+        setPointsToGive(getUsersCompanyPointsResponse?.data?.companyPoints);
+        setLoading(false);
+      } else {
+        if (axios.isCancel(getUsersCompanyPointsResponse)) {
+          console.log("api is cancelled");
+        } else {
+          const successToast = new Toast(
+            getUsersCompanyPointsResponse.response.data.message,
+            "error",
+            getUsersCompanyPointsResponse.response.status
+          );
+          successToast.show();
+        }
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+    } finally {
+      // Set loading to false to re-enable button after the request is done
+      setLoading(false);
+    }
+  };
 
   const getUserDetail = async (request) => {
     try {
@@ -496,7 +531,7 @@ function MainApp() {
                     <h2 className="text-2xl font-semibold">Give Points</h2>
                     <div className="bg-indigo-50 px-4 py-2 rounded-lg">
                       <span className="text-indigo-600 font-semibold">
-                        {pointsToGive} points available to give
+                        {pointsToGive} Points Available To Give
                       </span>
                     </div>
                   </div>
@@ -694,45 +729,7 @@ function MainApp() {
               </div>
             )}
 
-            {currentView === "company" && (
-              <div className="bg-white p-6 rounded-xl shadow-sm">
-                <h2 className="text-2xl font-semibold mb-6">
-                  Company Activity
-                </h2>
-                <div className="space-y-4">
-                  {companyActivity.map((activity) => (
-                    <div key={activity.id} className="border-b pb-4">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="bg-blue-50 px-2 py-1 rounded-md">
-                            <p className="font-medium text-blue-600">
-                              {activity.to}
-                            </p>
-                          </div>
-                          <span className="text-gray-400">from</span>
-                          <div className="bg-blue-50 px-2 py-1 rounded-md">
-                            <p className="font-medium text-blue-600">
-                              {activity.from}
-                            </p>
-                          </div>
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-                            +{activity.points} points
-                          </span>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(activity.date)}
-                          </p>
-                        </div>
-                        <div className="bg-gray-50 rounded-lg p-3">
-                          <p className="text-gray-600 break-words">
-                            {activity.message}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {currentView === "company" && <CompActivityCard />}
 
             {currentView === "rewards" && (
               <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -918,7 +915,8 @@ function MainApp() {
               //   </div>
               // </div>
 
-              <PaymentPage />
+              // <PaymentPage />
+              <PointsDistForm />
             )}
 
             {currentView === "users" && <InviteMembers />}
