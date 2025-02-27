@@ -2,6 +2,7 @@
 export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
 
 export const API_URL = {
+  // USERS
   SIGNUP: "api/user/V1/createUser",
 
   SIGNIN: "api/user/V1/login",
@@ -26,4 +27,13 @@ export const API_URL = {
 
   GET_ACTIVE_USER_COUNT_BY_COMPANY_ID:
     "api/user/V1/getActiveUserCountByCompanyId",
+
+  GET_USER_COMPANY_POINTS: "api/user/V1/getUserCompanyPoints",
+
+  //POINTS
+
+  POINTS_DISTRIBUTE_BY_COMPANY_ID: "api/points/V1/pointsDistributeByCompany",
+
+  //COMPANY
+  GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
 };
