@@ -140,10 +140,12 @@ function MainApp() {
   }, []);
 
   useEffect(() => {
-    const request = axios.CancelToken.source();
+    if (currentView === "give") {
+      const request = axios.CancelToken.source();
 
-    getUsersCompanyPoints(request);
-    return () => request.cancel(); // (*)
+      getUsersCompanyPoints(request);
+      return () => request.cancel(); // (*)
+    }
   }, [currentView]);
 
   const getUsersCompanyPoints = async (request) => {
