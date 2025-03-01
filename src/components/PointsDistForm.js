@@ -22,7 +22,7 @@ const PointsDistForm = () => {
     e.preventDefault();
     setIsSubmitting(true); // Disable button
     const data = {
-      points: points,
+      points: parseInt(points),
       carryForward: carryForward,
     };
 
