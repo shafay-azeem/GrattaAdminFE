@@ -8,7 +8,7 @@ const PointsDistForm = () => {
   const [companyName, setCompanyName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [points, setPoints] = useState("");
-  const [carryForward, setCarryForward] = useState(false); // Default is "Not Carry Forward"
+  const [carryForward, setCarryForward] = useState(true); // Default is "Not Carry Forward"
 
   useEffect(() => {
     // Retrieve company name from localStorage
@@ -23,6 +23,7 @@ const PointsDistForm = () => {
     setIsSubmitting(true); // Disable button
     const data = {
       points: points,
+      carryForward: carryForward,
     };
 
     try {

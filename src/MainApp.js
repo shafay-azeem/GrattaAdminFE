@@ -13,7 +13,7 @@ function MainApp() {
 
   const [message, setMessage] = useState("");
   const [points, setPoints] = useState(1250);
-  const [pointsToGive, setPointsToGive] = useState(500);
+  const [pointsToGive, setPointsToGive] = useState();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentView, setCurrentView] = useState("give");
   const [isAdmin, setIsAdmin] = useState("");
@@ -531,7 +531,9 @@ function MainApp() {
                     <h2 className="text-2xl font-semibold">Give Points</h2>
                     <div className="bg-indigo-50 px-4 py-2 rounded-lg">
                       <span className="text-indigo-600 font-semibold">
-                        {pointsToGive} Points Available To Give
+                        {pointsToGive !== undefined && pointsToGive !== null
+                          ? `${pointsToGive} Points Available To Give`
+                          : "Fetching available points..."}
                       </span>
                     </div>
                   </div>

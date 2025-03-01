@@ -57,41 +57,51 @@ const CompActivityCard = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-semibold mb-6">Company Activity</h2>
-      <div className="space-y-4">
-        {companyActivity.map((activity) => (
-          <div key={activity._id} className="border-b pb-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="bg-blue-50 px-2 py-1 rounded-md">
-                  <p className="font-medium text-blue-600">
-                    {activity.receiver.name}
-                  </p>
+    <>
+      {loading ? (
+        <div className="flex items-center justify-center w-full h-screen">
+          <p className="text-gray-500 text-lg font-medium">
+            Loading activity...
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white p-6 rounded-xl">
+          <h2 className="text-2xl font-semibold mb-6">Company Activity</h2>
+          <div className="space-y-4">
+            {companyActivity.map((activity) => (
+              <div key={activity._id} className="border-b pb-4">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-blue-50 px-2 py-1 rounded-md">
+                      <p className="font-medium text-blue-600">
+                        {activity.receiver.name}
+                      </p>
+                    </div>
+                    <span className="text-gray-400">from</span>
+                    <div className="bg-blue-50 px-2 py-1 rounded-md">
+                      <p className="font-medium text-blue-600">
+                        {activity.sender.name}
+                      </p>
+                    </div>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
+                      +{activity.points} points
+                    </span>
+                    <p className="text-xs text-gray-500">
+                      {formatDate(activity.createdAt)}
+                    </p>
+                  </div>
+                  {activity.type === "company_allocation" ? null : (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-gray-600 break-words">User Note</p>
+                    </div>
+                  )}
                 </div>
-                <span className="text-gray-400">from</span>
-                <div className="bg-blue-50 px-2 py-1 rounded-md">
-                  <p className="font-medium text-blue-600">
-                    {activity.sender.name}
-                  </p>
-                </div>
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-                  +{activity.points} points
-                </span>
-                <p className="text-xs text-gray-500">
-                  {formatDate(activity.createdAt)}
-                </p>
               </div>
-              {activity.type === "company_allocation" ? null : (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-gray-600 break-words">User Note</p>
-                </div>
-              )}
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
