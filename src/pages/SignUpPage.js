@@ -1,25 +1,32 @@
 import { useState } from "react";
-import apiFunctions from "./global/GlobalFunction";
-import { API_URL, BASE_URL } from "./global/Constant";
+import apiFunctions from "../global/GlobalFunction";
+import { API_URL, BASE_URL } from "../global/Constant";
 import { useNavigate } from "react-router-dom";
-import Toast from "./Hooks/Toast.js";
-const LoginPage = () => {
+import Toast from "../Hooks/Toast.js";
+const SignUpPage = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // setError("");
+    setError("");
 
-    // if (password.length < 8) {
-    //   setError("Password must be at least 8 characters long");
-    //   setLoading(false);
-    //   return;
-    // }
-    let loginBody = {
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
+    let signUpBody = {
+      firstName: firstName,
+      lastName: lastName,
+      companyName: companyName,
       email: email,
       password: password,
     };
@@ -27,38 +34,25 @@ const LoginPage = () => {
     try {
       // Set loading to true to disable further clicks
       setLoading(true);
-      let loginResponse = await apiFunctions.POST_REQUEST(
-        BASE_URL + API_URL.SIGNIN,
-        loginBody
+      let signUpResponse = await apiFunctions.POST_REQUEST(
+        BASE_URL + API_URL.SIGNUP,
+        signUpBody
       );
-      if (loginResponse.status === 201 || loginResponse.status === 200) {
+      //console.log(signUpResponse.data.data.roleId, "signUpResponse");
+      if (signUpResponse.status === 201 || signUpResponse.status === 200) {
         const successToast = new Toast(
-          loginResponse.data.message,
+          signUpResponse.data.message,
           "success",
-          loginResponse.status
+          signUpResponse.status
         );
         successToast.show();
-        navigate("/MainApp");
-        localStorage.setItem("token", loginResponse.data.token);
-        if (loginResponse.data.user) {
-          localStorage.setItem("role", loginResponse.data.user.role);
-        }
-        // Store company name in local storage
-        if (loginResponse.data.user && loginResponse.data.user.company) {
-          localStorage.setItem(
-            "companyName",
-            loginResponse.data.user.company.name
-          );
-          localStorage.setItem(
-            "companyId",
-            loginResponse.data.user.company._id
-          );
-        }
+        navigate("/loginpage");
+        //localStorage.setItem("token", loginDealerResponse.data.token);
       } else {
         const successToast = new Toast(
-          loginResponse.response.data.message,
+          signUpResponse.response.data.message,
           "error",
-          loginResponse.response.status
+          signUpResponse.response.status
         );
         successToast.show();
       }
@@ -70,6 +64,7 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F0533] to-[#000000] flex flex-col">
       <nav className="bg-transparent">
@@ -94,10 +89,69 @@ const LoginPage = () => {
             <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-64 h-64 bg-gradient-to-r from-[#FC36FF] to-[#7F31FB] rounded-full filter blur-3xl opacity-20"></div>
             <div className="relative">
               <h2 className="text-center text-4xl font-bold text-[#FFFFFF] mb-8">
-                Welcome
+                Create your account
               </h2>
               <div className="bg-[#0F0533] bg-opacity-50 p-8 rounded-2xl backdrop-blur-sm border border-[#7AFBF7]/20">
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-400 text-red-400 rounded-lg">
+                    {error.toString()}
+                  </div>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="firstName"
+                      className="block text-[#FFFFFF] text-sm font-medium mb-2"
+                    >
+                      First Name
+                    </label>
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="w-full px-4 py-3 bg-[#0F0533] border border-[#7AFBF7]/20 rounded-lg text-[#FFFFFF] placeholder-[#9996AA] focus:outline-none focus:ring-2 focus:ring-[#FC36FF] focus:border-transparent"
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="lastName"
+                      className="block text-[#FFFFFF] text-sm font-medium mb-2"
+                    >
+                      Last Name
+                    </label>
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="w-full px-4 py-3 bg-[#0F0533] border border-[#7AFBF7]/20 rounded-lg text-[#FFFFFF] placeholder-[#9996AA] focus:outline-none focus:ring-2 focus:ring-[#FC36FF] focus:border-transparent"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="company"
+                      className="block text-[#FFFFFF] text-sm font-medium mb-2"
+                    >
+                      Company Name
+                    </label>
+                    <input
+                      id="company"
+                      name="company"
+                      type="text"
+                      required
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      className="w-full px-4 py-3 bg-[#0F0533] border border-[#7AFBF7]/20 rounded-lg text-[#FFFFFF] placeholder-[#9996AA] focus:outline-none focus:ring-2 focus:ring-[#FC36FF] focus:border-transparent"
+                      placeholder="Enter your company name"
+                    />
+                  </div>
                   <div>
                     <label
                       htmlFor="email"
@@ -131,32 +185,8 @@ const LoginPage = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full px-4 py-3 bg-[#0F0533] border border-[#7AFBF7]/20 rounded-lg text-[#FFFFFF] placeholder-[#9996AA] focus:outline-none focus:ring-2 focus:ring-[#FC36FF] focus:border-transparent"
-                      placeholder="Enter your password"
+                      placeholder="Create a password"
                     />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        className="h-4 w-4 text-[#FC36FF] focus:ring-[#FC36FF] border-[#7AFBF7]/20 rounded"
-                      />
-                      <label
-                        htmlFor="remember-me"
-                        className="ml-2 block text-sm text-[#9996AA]"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                    <div className="text-sm">
-                      <a
-                        href="/forgot-password"
-                        className="text-[#7AFBF7] hover:text-[#FC36FF] transition-colors"
-                      >
-                        Forgot password?
-                      </a>
-                    </div>
                   </div>
                   <button
                     type="submit"
@@ -166,18 +196,18 @@ const LoginPage = () => {
                     {loading ? (
                       <i className="fas fa-circle-notch fa-spin"></i>
                     ) : (
-                      "Sign In"
+                      "Create Account"
                     )}
                   </button>
                 </form>
                 <div className="mt-6 text-center">
                   <p className="text-[#9996AA]">
-                    Don't have an account?{" "}
+                    Already have an account?{" "}
                     <a
-                      href="/SignUpPage"
+                      href="/loginpage"
                       className="text-[#7AFBF7] hover:text-[#FC36FF] transition-colors"
                     >
-                      Sign up
+                      Log in
                     </a>
                   </p>
                 </div>
@@ -199,4 +229,4 @@ const LoginPage = () => {
     </div>
   );
 };
-export default LoginPage;
+export default SignUpPage;

@@ -91,9 +91,11 @@ const CompActivityCard = () => {
                         {formatDate(activity.createdAt)}
                       </p>
                     </div>
-                    {activity.type === "company_allocation" ? null : (
+                    {activity?.type === "company_allocation" ? null : (
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-gray-600 break-words">User Note</p>
+                        <p className="text-gray-600 break-words">
+                          {activity.note}
+                        </p>
                       </div>
                     )}
                   </div>

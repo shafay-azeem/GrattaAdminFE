@@ -5,9 +5,9 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import apiFunctions from "./global/GlobalFunction";
-import { API_URL, BASE_URL } from "./global/Constant";
-import Toast from "./Hooks/Toast";
+import apiFunctions from "../global/GlobalFunction";
+import { API_URL, BASE_URL } from "../global/Constant";
+import Toast from "../Hooks/Toast";
 import { toast } from "react-toastify";
 
 function ResetPassword() {
