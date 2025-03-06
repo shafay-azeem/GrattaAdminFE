@@ -124,6 +124,7 @@ function MainApp() {
       date: "2025-01-12",
     },
   ]);
+  const [refreshData, setRefreshData] = useState(false); // State to trigger API call
 
   useEffect(() => {
     // Retrieve role from localStorage
@@ -147,7 +148,7 @@ function MainApp() {
       getUsersCompanyPoints(request);
       return () => request.cancel(); // (*)
     }
-  }, [currentView]);
+  }, [currentView, refreshData]);
 
   const getUsersCompanyPoints = async (request) => {
     if (loading) return;
@@ -541,7 +542,7 @@ function MainApp() {
                       </span>
                     </div>
                   </div>
-                  <GivePointsForm />
+                  <GivePointsForm setRefreshData={setRefreshData} />
                   {/* <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="relative">
                       <div className="mb-4">

@@ -6,7 +6,7 @@ import { API_URL, BASE_URL } from "../global/Constant";
 import Toast from "../Hooks/Toast";
 import axios from "axios";
 
-const GivePointsForm = () => {
+const GivePointsForm = ({ setRefreshData }) => {
   const [message, setMessage] = useState("");
   const [pointsInput, setPointsInput] = useState("");
   const [submittedData, setSubmittedData] = useState(null);
@@ -147,6 +147,7 @@ const GivePointsForm = () => {
         // Clear form fields after successful submission
         setPointsInput("");
         setMessage("");
+        setRefreshData((prev) => !prev);
       } else {
         const successToast = new Toast(
           userTransactionResponse.response.data.message,
