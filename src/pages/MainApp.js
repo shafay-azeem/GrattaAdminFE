@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiFunctions from "./global/GlobalFunction";
-import { API_URL, BASE_URL } from "./global/Constant";
-import Toast from "./Hooks/Toast";
+import apiFunctions from "../global/GlobalFunction";
+import { API_URL, BASE_URL } from "../global/Constant";
+import Toast from "../Hooks/Toast";
 import axios from "axios";
-import InviteMembers from "./components/InviteMembers";
-import PointsDistForm from "./components/PointsDistForm.js";
-import CompActivityCard from "./components/CompActivityCard.js";
+import InviteMembers from "../components/InviteMembers";
+import PointsDistForm from "../components/PointsDistForm.js";
+import CompActivityCard from "../components/CompActivityCard.js";
+import GivePointsForm from "../components/GivePointsForm.js";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -123,6 +124,7 @@ function MainApp() {
       date: "2025-01-12",
     },
   ]);
+  const [refreshData, setRefreshData] = useState(false); // State to trigger API call
 
   useEffect(() => {
     // Retrieve role from localStorage
@@ -146,7 +148,7 @@ function MainApp() {
       getUsersCompanyPoints(request);
       return () => request.cancel(); // (*)
     }
-  }, [currentView]);
+  }, [currentView, refreshData]);
 
   const getUsersCompanyPoints = async (request) => {
     if (loading) return;
@@ -219,6 +221,7 @@ function MainApp() {
     navigate("/loginpage");
   };
 
+  console.log(filteredUsers, "jjjj");
   const handleMessageChange = (e) => {
     const newMessage = e.target.value;
     setMessage(newMessage);
@@ -539,7 +542,8 @@ function MainApp() {
                       </span>
                     </div>
                   </div>
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <GivePointsForm setRefreshData={setRefreshData} />
+                  {/* <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="relative">
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -620,7 +624,7 @@ function MainApp() {
                     >
                       Give Points
                     </button>
-                  </form>
+                  </form> */}
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm">

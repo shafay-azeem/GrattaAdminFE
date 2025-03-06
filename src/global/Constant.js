@@ -30,9 +30,13 @@ export const API_URL = {
 
   GET_USER_COMPANY_POINTS: "api/user/V1/getUserCompanyPoints",
 
+  GET_COMPANY_USERS: "api/user/V1/getCompanyUsers",
+
   //POINTS
 
   POINTS_DISTRIBUTE_BY_COMPANY_ID: "api/points/V1/pointsDistributeByCompany",
+
+  USER_TO_USER_TRANSACTION: "api/points/V1/userToUserTransaction",
 
   //COMPANY
   GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
