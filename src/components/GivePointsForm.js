@@ -12,6 +12,8 @@ const GivePointsForm = ({ setRefreshData }) => {
   const [submittedData, setSubmittedData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]); // For real-time filtering
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // const users = [
@@ -42,6 +44,7 @@ const GivePointsForm = ({ setRefreshData }) => {
           display: user.displayName, // Ensure 'display' key exists
         }));
         setUsers(apiUsers); // Update state with API data
+        setFilteredUsers(apiUsers); // Initially, all users are displayed
 
         setLoading(false);
       } else {
@@ -86,6 +89,14 @@ const GivePointsForm = ({ setRefreshData }) => {
   //   });
   //   return extractedUsers;
   // };
+
+  const handleSearch = (searchText) => {
+    const filtered = users.filter((user) =>
+      user.display.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
+
   const extractMentions = (message) => {
     let extractedUsers = [];
     let usedMentions = new Set();
@@ -192,6 +203,7 @@ const GivePointsForm = ({ setRefreshData }) => {
               // markup="@__display__"
               markup="@[__display__](__id__)"
               displayTransform={(id, display) => `@${display}`}
+              onSearch={handleSearch} // Enable search filtering
               style={{}}
             />
           </MentionsInput>
