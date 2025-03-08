@@ -38,6 +38,10 @@ export const API_URL = {
 
   USER_TO_USER_TRANSACTION: "api/points/V1/userToUserTransaction",
 
+  GET_USER_POINT_HISTORY: "api/points/V1/getUserPointHistory",
+
+  GET_RECEIVED_USER_TRANSFERS: "api/points/V1/getReceivedUserTransfers",
+
   //COMPANY
   GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
 };

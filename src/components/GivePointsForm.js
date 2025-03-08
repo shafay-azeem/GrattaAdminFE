@@ -211,10 +211,10 @@ const GivePointsForm = ({ setRefreshData }) => {
 
         <button
           type="submit"
-          disabled={!message.trim() || !pointsInput}
+          disabled={!message.trim() || !pointsInput || isSubmitting}
           className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          Give Points
+          {isSubmitting ? "Processing..." : "Give Points"}
         </button>
       </form>
 
