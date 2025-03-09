@@ -91,6 +91,7 @@ const PointsGivenList = ({ setRefreshData, refreshData }) => {
         );
         successToast.show();
         setUpdateRefreshData((prev) => !prev);
+        setRefreshData((prev) => !prev);
       } else {
         const successToast = new Toast(
           revertTransactionResponse.response.data.message,
@@ -156,70 +157,82 @@ const PointsGivenList = ({ setRefreshData, refreshData }) => {
   };
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-semibold mb-6">Points Given</h2>
-      <div className="space-y-4">
-        {pointsGivenList.map((x) => (
-          <div key={x._id} className="border-b pb-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="bg-blue-50 px-2 py-1 rounded-md">
-                  <p className="font-medium text-blue-600">{x.receiver.name}</p>
-                </div>
-                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">
-                  {x.points} points
-                </span>
-                <p className="text-xs text-gray-500">
-                  {formatDate(x.createdAt)}
-                </p>
-                <div className="ml-auto flex gap-2">
-                  <button
-                    onClick={() => handleeditNote(x)}
-                    className="text-indigo-600 hover:text-indigo-700"
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleUndoPoints(x._id)}
-                    className="text-red-600 hover:text-red-700"
-                    title="Undo points"
-                  >
-                    <i className="fas fa-undo"></i>
-                  </button>
+      {loading ? (
+        <div className="flex items-center justify-center w-full h-screen">
+          <p className="text-gray-500 text-lg font-medium">Loading...</p>
+        </div>
+      ) : pointsGivenList.length > 0 ? (
+        <>
+          <h2 className="text-2xl font-semibold mb-6">Points Given</h2>
+          <div className="space-y-4">
+            {pointsGivenList.map((x) => (
+              <div key={x._id} className="border-b pb-4">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-blue-50 px-2 py-1 rounded-md">
+                      <p className="font-medium text-blue-600">
+                        {x.receiver.name}
+                      </p>
+                    </div>
+                    <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">
+                      {x.points} points
+                    </span>
+                    <p className="text-xs text-gray-500">
+                      {formatDate(x.createdAt)}
+                    </p>
+                    <div className="ml-auto flex gap-2">
+                      <button
+                        onClick={() => handleeditNote(x)}
+                        className="text-indigo-600 hover:text-indigo-700"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button
+                        onClick={() => handleUndoPoints(x._id)}
+                        className="text-red-600 hover:text-red-700"
+                        title="Undo points"
+                      >
+                        <i className="fas fa-undo"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {editingActivity?._id === x._id ? (
+                    <div className="mt-2">
+                      <textarea
+                        value={editNote}
+                        onChange={(e) => setEditNote(e.target.value)}
+                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        rows={2}
+                      />
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={handleCancelEdit}
+                          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          disabled={isSubmitting}
+                          onClick={() => handleSaveEdit(x)}
+                          className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-gray-600 break-words">{x.note}</p>
+                    </div>
+                  )}
                 </div>
               </div>
-              {editingActivity?._id === x._id ? (
-                <div className="mt-2">
-                  <textarea
-                    value={editNote}
-                    onChange={(e) => setEditNote(e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    rows={2}
-                  />
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      onClick={handleCancelEdit}
-                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      disabled={isSubmitting}
-                      onClick={() => handleSaveEdit(x)}
-                      className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-gray-600 break-words">{x.note}</p>
-                </div>
-              )}
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      ) : (
+        <p className="text-gray-500 text-center mt-6">No transactions found.</p>
+      )}
     </div>
   );
 };
