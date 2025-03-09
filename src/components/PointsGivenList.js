@@ -158,7 +158,7 @@ const PointsGivenList = ({ setRefreshData, refreshData }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       {loading ? (
-        <div className="flex items-center justify-center w-full h-screen">
+        <div className="flex items-center justify-center w-full">
           <p className="text-gray-500 text-lg font-medium">Loading...</p>
         </div>
       ) : pointsGivenList.length > 0 ? (
