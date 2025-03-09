@@ -1,5 +1,5 @@
-//export const BASE_URL = "http://localhost:7000/";
-export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
+export const BASE_URL = "http://localhost:7000/";
+//export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
 
 export const API_URL = {
   // USERS
@@ -32,8 +32,6 @@ export const API_URL = {
 
   GET_COMPANY_USERS: "api/user/V1/getCompanyUsers",
 
-  //POINTS
-
   POINTS_DISTRIBUTE_BY_COMPANY_ID: "api/points/V1/pointsDistributeByCompany",
 
   USER_TO_USER_TRANSACTION: "api/points/V1/userToUserTransaction",
@@ -42,6 +40,11 @@ export const API_URL = {
 
   GET_RECEIVED_USER_TRANSFERS: "api/points/V1/getReceivedUserTransfers",
 
-  //COMPANY
+  GET_POINTS_GIVEN_LAST_HOUR: "api/points/V1/getPointsGivenLastHour",
+
+  UPDATE_TRANSACTION_NOTE: "api/points/V1/updateTransactionNote",
+
+  REVERT_TRANSACTION: "api/points/V1/revertTransaction",
+
   GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
 };

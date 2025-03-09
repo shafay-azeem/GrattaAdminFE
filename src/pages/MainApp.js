@@ -10,6 +10,7 @@ import CompActivityCard from "../components/CompActivityCard.js";
 import GivePointsForm from "../components/GivePointsForm.js";
 import UserPointHistory from "../components/UserPointHistory.js";
 import PointsAvailable from "../components/PointsAvailable.js";
+import PointsGivenList from "../components/PointsGivenList.js";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -471,7 +472,7 @@ function MainApp() {
             <button
               onClick={() => setCurrentView("transactions")}
               className={`p-3 rounded-lg text-left ${
-                currentView === "rewards"
+                currentView === "transactions"
                   ? "bg-[#7F31FB] text-white"
                   : "text-white hover:bg-[#7F31FB]/50"
               }`}
@@ -632,8 +633,12 @@ function MainApp() {
                     </button>
                   </form> */}
                 </div>
+                <PointsGivenList
+                  setRefreshData={setRefreshData}
+                  refreshData={refreshData}
+                />
 
-                <div className="bg-white p-6 rounded-xl shadow-sm">
+                {/* <div className="bg-white p-6 rounded-xl shadow-sm">
                   <h2 className="text-2xl font-semibold mb-6">Points Given</h2>
                   <div className="space-y-4">
                     {companyActivity
@@ -705,7 +710,7 @@ function MainApp() {
                         </div>
                       ))}
                   </div>
-                </div>
+                </div> */}
               </>
             )}
 
