@@ -84,7 +84,13 @@ const UserPointHistory = ({ currentView }) => {
                         {activity.receiver.name}
                       </p>
                     </div>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm ${
+                        activity.points < 0
+                          ? "bg-red-100 text-red-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {activity.points} points
                     </span>
                     <p className="text-xs text-gray-500">

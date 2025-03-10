@@ -83,7 +83,7 @@ const CompActivityCard = () => {
                         </p>
                       </div>
                       <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-                        +{activity.points} points
+                        {activity.points} points
                       </span>
                       <p className="text-xs text-gray-500">
                         {formatDate(activity.createdAt)}
