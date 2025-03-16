@@ -47,4 +47,6 @@ export const API_URL = {
   REVERT_TRANSACTION: "api/points/V1/revertTransaction",
 
   GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
+
+  POST_CHECKOUT: "/checkout/proceed-to-payment",
 };

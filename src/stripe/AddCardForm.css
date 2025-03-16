@@ -1,0 +1,46 @@
+.card_input {
+  width: 100%;
+  border: #ddd solid 1px;
+  border-radius: 0px;
+  padding: 10px;
+  margin-bottom: 14px;
+  outline: none;
+}
+
+#card-button {
+  width: 100%;
+  background-color: #ee2c35;
+  border: #ee2c35;
+  border-radius: 0px;
+  color: #fff;
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: "Nitti-Grotesk-Normal";
+  text-transform: uppercase;
+}
+
+#card-button:hover {
+  width: 100%;
+  background-color: Black;
+  border: black;
+  border-radius: 0px;
+  color: #fff;
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: "Nitti-Grotesk-Normal";
+  text-transform: uppercase;
+}
+.labelStyling {
+  color: #6c757d;
+}
+
+.custom-card-input:focus {
+  outline: none !important; /* Removes focus outline */
+  box-shadow: none !important;
+  /* Removes Bootstrap's default focus shadow */
+  border-color: #ddd !important;
+}
