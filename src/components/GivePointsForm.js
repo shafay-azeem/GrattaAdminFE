@@ -38,7 +38,6 @@ const GivePointsForm = ({ setRefreshData }) => {
         request
       );
       if (getCompanyUsersResponse.status === 200) {
-        console.log(getCompanyUsersResponse.data.users, "abc");
         const apiUsers = getCompanyUsersResponse.data.users.map((user) => ({
           id: user._id,
           display: user.displayName, // Ensure 'display' key exists

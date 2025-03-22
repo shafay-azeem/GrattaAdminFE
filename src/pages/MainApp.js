@@ -224,7 +224,6 @@ function MainApp() {
     navigate("/loginpage");
   };
 
-  console.log(filteredUsers, "jjjj");
   const handleMessageChange = (e) => {
     const newMessage = e.target.value;
     setMessage(newMessage);
