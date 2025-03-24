@@ -16,13 +16,6 @@ const GivePointsForm = ({ setRefreshData }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const users = [
-  //   { id: "1", display: "John Doe" },
-  //   { id: "2", display: "Jane Smith" },
-  //   { id: "3", display: "Michael Johnson" },
-  //   { id: "4", display: "Emran Doe" },
-  // ];
-
   useEffect(() => {
     const request = axios.CancelToken.source();
     getCompanyUsers(request);
@@ -38,7 +31,6 @@ const GivePointsForm = ({ setRefreshData }) => {
         request
       );
       if (getCompanyUsersResponse.status === 200) {
-        console.log(getCompanyUsersResponse.data.users, "abc");
         const apiUsers = getCompanyUsersResponse.data.users.map((user) => ({
           id: user._id,
           display: user.displayName, // Ensure 'display' key exists
@@ -68,28 +60,6 @@ const GivePointsForm = ({ setRefreshData }) => {
     }
   };
 
-  // const extractMentions = (message) => {
-  //   let extractedUsers = [];
-  //   let usedMentions = new Set();
-
-  //   users.forEach((user) => {
-  //     const regex = new RegExp(`@${user.display}\\s*([^@]*)`, "g");
-  //     let match;
-  //     while ((match = regex.exec(message)) !== null) {
-  //       if (!usedMentions.has(user.id)) {
-  //         extractedUsers.push({
-  //           id: user.id,
-  //           name: user.display,
-  //           note: match[1]?.trim() || "No note provided",
-  //           points: parseInt(pointsInput),
-  //         });
-  //         usedMentions.add(user.id);
-  //       }
-  //     }
-  //   });
-  //   return extractedUsers;
-  // };
-
   const handleSearch = (searchText) => {
     const filtered = users.filter((user) =>
       user.display.toLowerCase().includes(searchText.toLowerCase())
@@ -97,31 +67,94 @@ const GivePointsForm = ({ setRefreshData }) => {
     setFilteredUsers(filtered);
   };
 
+  // old function
+  // const extractMentions = (message) => {
+  //   let extractedUsers = [];
+  //   let usedMentions = new Set();
+
+  //   // Match mentions followed by a note (if any)
+  //   const regex = /@\[([^\]]+)\]\(([^)]+)\)\s*([^\n@]*)/g;
+  //   let match;
+  //   while ((match = regex.exec(message)) !== null) {
+  //     const displayName = match[1];
+  //     const userId = match[2];
+  //     const note = match[3]?.trim() || "No note provided"; // Capture text after mention
+
+  //     if (!usedMentions.has(userId)) {
+  //       extractedUsers.push({
+  //         id: userId,
+  //         // name: displayName,
+  //         note: note,
+  //         points: parseInt(pointsInput),
+  //       });
+  //       usedMentions.add(userId);
+  //     }
+  //   }
+
+  //   return extractedUsers;
+  // };
+
   const extractMentions = (message) => {
+    const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+
+    let matches = [];
+    let match;
+
+    // Step 1: Extract all mentions
+    while ((match = mentionRegex.exec(message)) !== null) {
+      matches.push({
+        display: match[1],
+        id: match[2],
+        start: match.index,
+        end: mentionRegex.lastIndex,
+      });
+    }
+
     let extractedUsers = [];
     let usedMentions = new Set();
 
-    // Match mentions followed by a note (if any)
-    const regex = /@\[([^\]]+)\]\(([^)]+)\)\s*([^\n@]*)/g;
-    let match;
-    while ((match = regex.exec(message)) !== null) {
-      const displayName = match[1];
-      const userId = match[2];
-      const note = match[3]?.trim() || "No note provided"; // Capture text after mention
+    // Step 2: Extract notes for each mention
+    for (let i = 0; i < matches.length; i++) {
+      const current = matches[i];
+      const next = matches[i + 1];
 
-      if (!usedMentions.has(userId)) {
+      const noteStart = current.end;
+      const noteEnd = next ? next.start : message.length;
+
+      let rawNote = message.slice(noteStart, noteEnd).trim();
+
+      matches[i].note = rawNote; // Temporarily store note
+    }
+
+    // Step 3: If the last one has a note, propagate it backward to those without
+    let lastNote = matches[matches.length - 1].note || "No note provided";
+
+    for (let i = matches.length - 1; i >= 0; i--) {
+      let note = matches[i].note.trim();
+      if (!note) {
+        matches[i].note = lastNote;
+      } else {
+        lastNote = matches[i].note;
+      }
+    }
+
+    // Step 4: Format result
+    for (let i = 0; i < matches.length; i++) {
+      const mention = matches[i];
+
+      if (!usedMentions.has(mention.id)) {
         extractedUsers.push({
-          id: userId,
-          // name: displayName,
-          note: note,
+          id: mention.id,
+          note: mention.note || "No note provided",
           points: parseInt(pointsInput),
         });
-        usedMentions.add(userId);
+        usedMentions.add(mention.id);
       }
     }
 
     return extractedUsers;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true); // Disable button
