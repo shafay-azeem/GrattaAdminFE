@@ -14,6 +14,13 @@ const AddCardModal = ({ show, onHide, handleModalSubmit, loading }) => {
 
       {/* Modal content */}
       <div className="relative bg-[#ffffff] text-black p-6 rounded-xl shadow-lg w-96">
+        {/* Close button (cross icon) */}
+        <button
+          onClick={onHide}
+          className="absolute top-2 right-2 text-2xl font-bold text-gray-600 hover:text-gray-800"
+        >
+          &times;
+        </button>
         <AddCardForm handleModalSubmit={handleModalSubmit} />
       </div>
     </div>
