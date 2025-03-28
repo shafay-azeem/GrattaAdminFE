@@ -419,7 +419,7 @@ function MainApp() {
       {/* Sidebar - Fixed Position */}
       <div className="w-64 bg-[#0F0533] shadow-lg flex flex-col h-screen fixed">
         <div className="p-4 flex-grow">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-4">
             <a href="/">
               <img
                 src="https://ucarecdn.com/89c130ef-6083-4ba2-a20d-ef5c56a5150c/-/format/auto/"
@@ -428,7 +428,7 @@ function MainApp() {
               />
             </a>
           </div>
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col">
             <button
               onClick={() => setCurrentView("give")}
               className={`p-3 rounded-lg text-left ${
@@ -511,7 +511,7 @@ function MainApp() {
           <button
             onClick={() => setCurrentView("manage card")}
             className={`w-full p-3 rounded-lg text-left ${
-              currentView === "update profile"
+              currentView === "manage card"
                 ? "bg-[#7F31FB] text-white"
                 : "text-white hover:bg-[#7F31FB]/50"
             }`}
