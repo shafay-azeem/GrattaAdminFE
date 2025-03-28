@@ -11,6 +11,7 @@ import GivePointsForm from "../components/GivePointsForm.js";
 import UserPointHistory from "../components/UserPointHistory.js";
 import PointsAvailable from "../components/PointsAvailable.js";
 import PointsGivenList from "../components/PointsGivenList.js";
+import ChangeCard from "../components/ChangeCard.js";
 
 function MainApp() {
   const navigate = useNavigate();
@@ -508,6 +509,17 @@ function MainApp() {
           )}
 
           <button
+            onClick={() => setCurrentView("manage card")}
+            className={`w-full p-3 rounded-lg text-left ${
+              currentView === "update profile"
+                ? "bg-[#7F31FB] text-white"
+                : "text-white hover:bg-[#7F31FB]/50"
+            }`}
+          >
+            <i className="fas fa-credit-card mr-3"></i> Manage Card
+          </button>
+
+          <button
             onClick={() => setCurrentView("update profile")}
             className={`w-full p-3 rounded-lg text-left ${
               currentView === "update profile"
@@ -714,37 +726,6 @@ function MainApp() {
             )}
 
             {currentView === "personal" && (
-              // <div className="bg-white p-6 rounded-xl shadow-sm">
-              //   <h2 className="text-2xl font-semibold mb-6">
-              //     Your Points History
-              //   </h2>
-              //   <div className="space-y-4">
-              //     {personalActivity.map((activity) => (
-              //       <div key={activity.id} className="border-b pb-4">
-              //         <div className="flex flex-col">
-              //           <div className="flex items-center gap-2 mb-2">
-              //             <div className="bg-blue-50 px-2 py-1 rounded-md">
-              //               <p className="font-medium text-blue-600">
-              //                 {activity.from}
-              //               </p>
-              //             </div>
-              //             <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-              //               +{activity.points} points
-              //             </span>
-              //             <p className="text-xs text-gray-500">
-              //               {formatDate(activity.date)}
-              //             </p>
-              //           </div>
-              //           <div className="bg-gray-50 rounded-lg p-3">
-              //             <p className="text-gray-600 break-words">
-              //               {activity.message}
-              //             </p>
-              //           </div>
-              //         </div>
-              //       </div>
-              //     ))}
-              //   </div>
-              // </div>
               <UserPointHistory currentView={currentView} />
             )}
 
@@ -790,58 +771,11 @@ function MainApp() {
             )}
 
             {currentView === "transactions" && (
-              // <div className="bg-white p-6 rounded-xl shadow-sm">
-              //   <h2 className="text-2xl font-semibold mb-6">
-              //     Points Transactions
-              //   </h2>
-              //   <div className="space-y-4">
-              //     {[...personalActivity, ...rewards.filter((r) => r.redeemed)]
-              //       .sort((a, b) => new Date(b.date) - new Date(a.date))
-              //       .map((activity) => (
-              //         <div key={activity.id} className="border-b pb-4">
-              //           <div className="flex flex-col">
-              //             <div className="flex items-center gap-2 mb-2">
-              //               {activity.name ? (
-              //                 <>
-              //                   <div className="bg-blue-50 px-2 py-1 rounded-md">
-              //                     <p className="font-medium text-blue-600">
-              //                       Redeemed {activity.name}
-              //                     </p>
-              //                   </div>
-              //                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-              //                     -{activity.points} points
-              //                   </span>
-              //                 </>
-              //               ) : (
-              //                 <>
-              //                   <span>Received from</span>
-              //                   <div className="bg-blue-50 px-2 py-1 rounded-md">
-              //                     <p className="font-medium text-blue-600">
-              //                       {activity.from}
-              //                     </p>
-              //                   </div>
-              //                   <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-              //                     +{activity.points} points
-              //                   </span>
-              //                 </>
-              //               )}
-              //               <p className="text-xs text-gray-500">
-              //                 {formatDate(activity.date)}
-              //               </p>
-              //             </div>
-              //             {activity.message && (
-              //               <div className="bg-gray-50 rounded-lg p-3">
-              //                 <p className="text-gray-600 break-words">
-              //                   {activity.message}
-              //                 </p>
-              //               </div>
-              //             )}
-              //           </div>
-              //         </div>
-              //       ))}
-              //   </div>
-              // </div>
               <PointsAvailable currentView={currentView} />
+            )}
+
+            {currentView === "manage card" && (
+              <ChangeCard currentView={currentView} />
             )}
 
             {currentView === "update profile" && (

@@ -1,5 +1,5 @@
-//export const BASE_URL = "http://localhost:7000/";
-export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
+export const BASE_URL = "http://localhost:7000/";
+//export const BASE_URL = "https://gratta-admin-be-2.vercel.app/";
 
 export const API_URL = {
   // USERS
@@ -49,4 +49,6 @@ export const API_URL = {
   GET_COMPANY_TRANSACTIONS: "api/company/V1/getCompanyTransactions",
 
   POST_CHECKOUT: "/checkout/proceed-to-payment",
+
+  GET_STRIPE_CARD_DETAILS: "api/card/V1/getStripeCardDetails",
 };
