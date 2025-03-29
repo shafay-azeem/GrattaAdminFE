@@ -8,19 +8,66 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import "./AddCardForm.css";
+import "./UpdateCardForm.css";
 import Toast from "../Hooks/Toast";
+import apiFunctions from "../global/GlobalFunction";
+import { API_URL, BASE_URL } from "../global/Constant";
 
 const stripePromise = loadStripe(
   "pk_test_51Qt39J05uvznrjSmkPQwJAOwcdCwVfzQbXJHbzdLq816kNkxQpqrXPaNFLkmxEnKeJf4KW8snvX0JhrKUH5gbafJ003zudp8it"
 );
 
-const CheckoutForm = ({ handleModalSubmit }) => {
+const CheckoutForm = ({ onHide, setRefreshData }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [cardHolderName, setCardHolderName] = useState("");
-  // const [cardHolderEmail, setCardHolderEmail] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleUpdateCard = async (cardToken) => {
+    // e.preventDefault();
+    setLoading(true);
+    let updateCardBody = {
+      token: cardToken,
+    };
+    // console.log(signUpBody, "signUpBody");
+    try {
+      // Set loading to true to disable further clicks
+      setLoading(true);
+      let updateCardResponse = await apiFunctions.POST_REQUEST(
+        BASE_URL + API_URL.UPDATE_STRIPE_CARD,
+        updateCardBody
+      );
+      //console.log(signUpResponse.data.data.roleId, "signUpResponse");
+      if (
+        updateCardResponse.status === 201 ||
+        updateCardResponse.status === 200
+      ) {
+        const successToast = new Toast(
+          updateCardResponse.data.message,
+          "success",
+          updateCardResponse.status
+        );
+        successToast.show();
+        onHide();
+        setRefreshData((prev) => !prev);
+        //localStorage.setItem("token", loginDealerResponse.data.token);
+      } else {
+        const successToast = new Toast(
+          updateCardResponse.response.data.message,
+          "error",
+          updateCardResponse.response.status
+        );
+        successToast.show();
+      }
+    } catch (error) {
+      const successToast = new Toast("Internal Server Error", "error", 500);
+      successToast.show();
+    } finally {
+      // Set loading to false to re-enable button after the request is done
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -67,13 +114,12 @@ const CheckoutForm = ({ handleModalSubmit }) => {
       // console.log("Received Token:", token.id);
 
       // Call the modal submit function with token
-      handleModalSubmit(token.id);
+      handleUpdateCard(token.id);
 
       elements.getElement(CardNumberElement).clear();
       elements.getElement(CardExpiryElement).clear();
       elements.getElement(CardCvcElement).clear();
       setCardHolderName("");
-      // setCardHolderEmail("");
 
       setIsButtonDisabled(false); // Enable button again after response is received
     }
@@ -96,22 +142,6 @@ const CheckoutForm = ({ handleModalSubmit }) => {
         onChange={(e) => setCardHolderName(e.target.value)}
         required
       />
-
-      {/* <label
-        htmlFor="cardholder-email"
-        className="block text-sm font-medium mb-2"
-      >
-        Cardholder Email
-      </label>
-      <input
-        id="cardholder-email"
-        placeholder="Enter your cardholder email"
-        className="w-full px-3 py-1  border border-[#808080]/20 rounded-lg text-[#000000] placeholder-[#9996AA] focus:outline-none focus:ring-1 focus:ring-[#808080] focus:border-transparent"
-        type="email"
-        value={cardHolderEmail}
-        onChange={(e) => setCardHolderEmail(e.target.value)}
-        required
-      /> */}
 
       <label className="block text-sm font-medium mb-2">
         Cardholder Number
@@ -158,10 +188,10 @@ const CheckoutForm = ({ handleModalSubmit }) => {
   );
 };
 
-const AddCardForm = ({ handleModalSubmit }) => (
+const UpdateCardForm = ({ onHide, setRefreshData }) => (
   <Elements stripe={stripePromise}>
-    <CheckoutForm handleModalSubmit={handleModalSubmit} />
+    <CheckoutForm onHide={onHide} setRefreshData={setRefreshData} />
   </Elements>
 );
 
-export default AddCardForm;
+export default UpdateCardForm;

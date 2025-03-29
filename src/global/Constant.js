@@ -51,4 +51,6 @@ export const API_URL = {
   POST_CHECKOUT: "/checkout/proceed-to-payment",
 
   GET_STRIPE_CARD_DETAILS: "api/card/V1/getStripeCardDetails",
+
+  UPDATE_STRIPE_CARD: "api/card/V1/updateStripeCard",
 };

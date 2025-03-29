@@ -3,6 +3,7 @@ import Cards from "react-credit-cards";
 // import Cards from "react-credit-cards-2";
 // import "react-credit-cards-2/dist/es/styles-compiled.css";
 import "react-credit-cards/es/styles-compiled.css";
+import UpdateCardModal from "../components/Modals/UpdateCardModal.js";
 
 import { API_URL, BASE_URL } from "../global/Constant";
 import apiFunctions from "../global/GlobalFunction";
@@ -19,6 +20,8 @@ const ChangeCard = ({ currentView }) => {
     brand: "",
     focus: "",
   });
+  const [modalShow, setModalShow] = useState(false);
+  const [refreshData, setRefreshData] = useState(false); // State to trigger API call
 
   const getPreviewNumber = (brand, last4) => {
     const brandPrefixes = {
@@ -47,7 +50,7 @@ const ChangeCard = ({ currentView }) => {
       getStripeCardDetails(request);
       return () => request.cancel(); // (*)
     }
-  }, [currentView]);
+  }, [currentView, refreshData]);
 
   const getStripeCardDetails = async (request) => {
     if (loading) return;
@@ -89,71 +92,83 @@ const ChangeCard = ({ currentView }) => {
     }
   };
 
+  const openUpdateCardModal = (e) => {
+    e.preventDefault();
+    // Open the modal
+    setModalShow(true);
+  };
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md max-w-xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-        Your Saved Card
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
-        This is your current card on file.
-      </p>
+    <>
+      <div className="bg-white p-6 rounded-xl shadow-md max-w-xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+          Your Saved Card
+        </h2>
 
-      <div className="mb-6">
-        <Cards
-          //   number={cardData.previewNumber}
-          name={cardData.name}
-          expiry={cardData.expiry}
-          focused={cardData.focus}
-          //   issuer={getIssuer(cardData.brand)}
-          number={`**** **** **** ${cardData?.last4}`}
-          issuer={
-            cardData?.brand === "American Express"
-              ? "amex"
-              : cardData?.brand === "Diners Club"
-              ? "dinersclub"
-              : cardData?.brand?.toLowerCase()
-          }
-          preview={true}
-        />
-      </div>
-
-      <form className="grid grid-cols-1 gap-4">
-        <input
-          type="text"
-          name="number"
-          placeholder="Card Number"
-          value={cardData.maskedNumber}
-          disabled
-          className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Cardholder Name"
-            value={cardData.name}
-            disabled
-            className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
-          />
-          <input
-            type="tel"
-            name="expiry"
-            placeholder="MM/YY"
-            value={cardData.expiry}
-            disabled
-            className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
+        <div className="mb-6">
+          <Cards
+            //   number={cardData.previewNumber}
+            name={cardData.name}
+            expiry={cardData.expiry}
+            focused={cardData.focus}
+            //   issuer={getIssuer(cardData.brand)}
+            number={`**** **** **** ${cardData?.last4}`}
+            issuer={
+              cardData?.brand === "American Express"
+                ? "amex"
+                : cardData?.brand === "Diners Club"
+                ? "dinersclub"
+                : cardData?.brand?.toLowerCase()
+            }
+            preview={true}
           />
         </div>
 
-        <button
-          type="submit"
-          className="mt-4 bg-[#7F31FB] text-white font-semibold py-3 rounded-md hover:bg-[#6a25d1] transition"
-        >
-          Change Card
-        </button>
-      </form>
-    </div>
+        <form className="grid grid-cols-1 gap-4" onSubmit={openUpdateCardModal}>
+          <input
+            type="text"
+            name="number"
+            placeholder="Card Number"
+            value={cardData.maskedNumber}
+            disabled
+            className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="name"
+              placeholder="Cardholder Name"
+              value={cardData.name}
+              disabled
+              className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
+            />
+            <input
+              type="tel"
+              name="expiry"
+              placeholder="MM/YY"
+              value={cardData.expiry}
+              disabled
+              className="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded-md cursor-not-allowed"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="mt-4 bg-[#7F31FB] text-white font-semibold py-3 rounded-md hover:bg-[#6a25d1] transition"
+          >
+            Change Card
+          </button>
+        </form>
+      </div>
+
+      <UpdateCardModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        setModalShow={setModalShow}
+        setRefreshData={setRefreshData}
+      />
+    </>
   );
 };
 
